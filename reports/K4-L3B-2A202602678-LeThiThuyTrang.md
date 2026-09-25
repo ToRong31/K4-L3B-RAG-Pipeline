@@ -2,7 +2,7 @@
 
 ## Thông tin
 
-- Họ và tên: Lê Thị Thu Trang
+- Họ và tên: Lê Thị Thuỳ Trang
 - Mã học viên: 2A202602678
 - Nhóm: sloppers
 - Repository/branch: ToRong31/K4-L3B-RAG-Pipeline / main
@@ -58,4 +58,4 @@ Mô tả tối đa hai quyết định mà bạn trực tiếp tham gia:
 Tôi xác nhận nội dung trên phản ánh đúng phần việc của mình và có thể giải thích hoặc chạy lại trong buổi demo.
 
 - Ngày: 25/09/2026
-- Tên thành viên: Lê Thị Thu Trang
+- Tên thành viên: Lê Thị Thùy Trang
