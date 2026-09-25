@@ -42,6 +42,8 @@ def test_formulation_one_request_two_languages_and_error_fallback(monkeypatch):
     assert formulation.formulate_query("Học phí?") == ("học phí học kỳ", "semester tuition")
     assert len(calls) == 1
     assert calls[0]["text"]["format"]["schema"]["required"] == ["query_vi", "query_en"]
+    assert "VinUni" in calls[0]["instructions"]
+    assert "AACC" in calls[0]["instructions"]
 
     class BrokenResponses:
         def create(self, **kwargs):
