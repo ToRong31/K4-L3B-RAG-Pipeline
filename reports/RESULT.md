@@ -29,7 +29,7 @@ Báo cáo thực nghiệm so sánh hai cấu hình Retrieval của hệ thống 
   - *Xử lý:* Trích xuất trực tiếp `top_k = 5` chunks có điểm tương đồng cosine cao nhất nạp vào LLM context.
 - **Config B — hybrid + RRF:**
   - *Retriever:* Chạy song song Dense Semantic Search (top 10) và Lexical Keyword Search BM25Okapi (top 10).
-  - *Xử lý:* Hợp nhất và tái xếp hạng hai danh sách bằng thuật toán Reciprocal Rank Fusion có trọng số ($RRF(d) = \sum \frac{w_i}{k + rank_i}$ với hằng số làm mịn $k=60$, trọng số 70% Dense và 30% BM25), trích xuất `top_k = 5` chunks tối ưu nhất.
+  - *Xử lý:* Hợp nhất và tái xếp hạng hai danh sách bằng thuật toán Reciprocal Rank Fusion có trọng số ($RRF(d) = \sum \frac{w_i}{k + rank_i}$ với hằng số làm mịn $k=60$, trọng số 70% Dense và 30% Lexical BM25).
 
 ---
 
@@ -42,15 +42,15 @@ Dưới đây là bảng tổng hợp kết quả đo đạc 4 metric RAG cốt 
 | Faithfulness      |                 0.914 |                   0.937 |    +0.023 | Tăng độ bám sát context, giảm thiểu thông tin suy diễn |
 | Answer relevance  |                 0.993 |                   0.993 |    +0.000 | Duy trì mức giải quyết trực diện câu hỏi của người dùng |
 | Context recall    |                 0.980 |                   0.989 |    +0.009 | Bao phủ trọn vẹn bằng chứng cần thiết trong top 5 |
-| Context precision |                 0.753 |                   0.826 |    +0.073 | Cải thiện mạnh mẽ (+7.3%), giảm thiểu chunks gây nhiễu |
-| **Average Score** |             **0.910** |               **0.936** | **+0.026**| **Config B vượt trội toàn diện trên toàn bộ pipeline** |
-| *Avg Latency (s)* |                0.892s |                  0.844s |   -0.048s | Duy trì độ trễ phản hồi tương đương (~0.85s) |
+| Context precision |                 0.759 |                   0.829 |    +0.070 | Cải thiện mạnh mẽ (+7.0%), giảm thiểu chunks gây nhiễu |
+| **Average Score** |             **0.911** |               **0.937** | **+0.026**| **Config B vượt trội toàn diện trên toàn bộ pipeline** |
+| *Avg Latency (s)* |                0.995s |                  1.056s |   +0.061s | Duy trì độ trễ phản hồi tương đương (~1.0s) |
 
 ### Phân tích chi tiết theo nhóm câu hỏi (Category Breakdown)
 
 | Nhóm câu hỏi (Category) | Số lượng | Recall Delta (B−A) | Precision Delta (B−A) | Phân tích đóng góp của RRF |
 | :---------------------- | -------: | -----------------: | --------------------: | :------------------------- |
-| **Keyword-heavy** (Tra cứu mã, biểu phí, số hiệu) | 14 cases | **+0.022** | **+0.070** | BM25 bắt chính xác các chuỗi số ("349.650.000", "50 giờ", "15 tiết") giúp đẩy chunk chứa đáp án lên rank #1 |
+| **Keyword-heavy** (Tra cứu mã, biểu phí, số hiệu) | 14 cases | **+0.022** | **+0.064** | BM25 bắt chính xác các chuỗi số ("349.650.000", "50 giờ", "15 tiết") giúp đẩy chunk chứa đáp án lên rank #1 |
 | **Multi-source confusion** (Phân biệt nguồn, SĐH vs ĐH) | 5 cases | **+0.000** | **+0.204** | **Bước nhảy vọt lớn nhất (+20.4% Precision)**: Loại bỏ các chunk nhầm lẫn giữa quy chế ĐH và Sau ĐH |
 | **Semantic similarity** (Câu hỏi diễn giải, chính sách) | 8 cases | -0.006 | -0.002 | Dense search vốn rất mạnh ở ngữ nghĩa; Hybrid giữ vững chất lượng mà không làm mất thông tin |
 
@@ -73,7 +73,7 @@ Dưới đây là bảng tổng hợp kết quả đo đạc 4 metric RAG cốt 
 
 1. **Tầng 1 (Context Recall & Context Precision):**  
    - *Context Recall:* Đo lường liệu retrieval có lấy được đầy đủ bằng chứng cần thiết hay không. Recall của Config A đạt 0.980 và Config B tăng lên 0.989.
-   - *Context Precision:* Đo lường độ tập trung của các đoạn trích xuất (các đoạn liên quan có nằm ở thứ hạng đầu hay bị pha loãng bởi chunk rác). Config A chỉ đạt 0.753 do Dense search dễ bị phân tán bởi các chunk có văn phong tương đồng; Config B nhảy vọt lên 0.826 (+7.3%) nhờ BM25 lọc chính xác từ khóa định danh.
+   - *Context Precision:* Đo lường độ tập trung của các đoạn trích xuất (các đoạn liên quan có nằm ở thứ hạng đầu hay bị pha loãng bởi chunk rác). Config A chỉ đạt 0.759 do Dense search dễ bị phân tán bởi các chunk có văn phong tương đồng; Config B nhảy vọt lên 0.829 (+7.0%) nhờ BM25 lọc chính xác từ khóa định danh.
 2. **Tầng 2 (Faithfulness):**  
    - Kiểm tra câu trả lời sinh ra có bám sát ngữ cảnh trích xuất hay xuất hiện ảo giác (hallucination). Khi Context Precision tăng (ít chunk nhiễu nạp vào prompt), Faithfulness tăng từ 0.914 lên 0.937 (+0.023). Context sạch hơn giúp generator không bị phân tâm bởi các số liệu không liên quan.
 3. **Tầng 3 (Answer Relevance):**  
@@ -84,18 +84,18 @@ Dưới đây là bảng tổng hợp kết quả đo đạc 4 metric RAG cốt 
 ## A/B comparison
 
 ### 1. Cấu hình tốt hơn theo từng khía cạnh
-- **Khả năng định vị bằng chứng chính xác (Context Precision):** Config B vượt trội rõ rệt (+7.3% overall, đặc biệt +20.4% ở các ca dễ nhầm lẫn nguồn). Sự kết hợp giữa Lexical và Dense triệt tiêu điểm yếu "pha loãng ngữ nghĩa" của Dense-only khi gặp các bảng biểu nhiều số liệu.
+- **Khả năng định vị bằng chứng chính xác (Context Precision):** Config B vượt trội rõ rệt (+7.0% overall, đặc biệt +20.4% ở các ca dễ nhầm lẫn nguồn). Sự kết hợp giữa Lexical và Dense triệt tiêu điểm yếu "pha loãng ngữ nghĩa" của Dense-only khi gặp các bảng biểu nhiều số liệu.
 - **Độ tin cậy của câu trả lời (Faithfulness):** Config B tốt hơn (+2.3%), chứng minh rằng context được lọc xếp hạng chuẩn sẽ trực tiếp nâng cao độ chính xác của câu trả lời từ LLM.
 - **Khả năng hiểu ngữ nghĩa mở (Semantic):** Config A và Config B tương đương trên các câu hỏi diễn giải khái quát chính sách, chứng minh việc tích hợp thêm BM25 không làm suy giảm năng lực hiểu ngữ nghĩa của Dense search.
 
 ### 2. Trade-off thực tế về Latency và Chi phí (Cost)
-- **Về Latency:** Trên môi trường thực nghiệm với Local BM25 cache song song, Config B đạt trung bình 0.844s so với 0.892s của Config A (độ chênh lệch dưới 0.05s là không đáng kể so với thời gian mạng gọi API LLM). Việc chạy thêm nhánh BM25 gần như không tạo ra gánh nặng độ trễ cho người dùng cuối.
-- **Về Chi phí Token LLM:** Hoàn toàn bằng nhau (\$0 delta chi phí token LLM) vì cả hai cấu hình đều cố định nạp đúng `top_k = 5` chunks vào LLM generator. 
+- **Về Latency:** Trên môi trường thực nghiệm với Local BM25 cache song song, Config B đạt trung bình 1.056s so với 0.995s của Config A (độ chênh lệch 0.06s là không đáng kể so với thời gian mạng gọi API LLM). Việc chạy thêm nhánh BM25 gần như không tạo ra gánh nặng độ trễ cho người dùng cuối.
+- **Về Chi phí Token LLM:** Hoàn toàn bằng nhau ($0 delta chi phí token LLM) vì cả hai cấu hình đều cố định nạp đúng `top_k = 5` chunks vào LLM generator. 
 
 ### 3. Những lỗi và hạn chế vẫn còn tồn tại (Persistent Failure Modes)
 - **Vấn đề ranh giới Chunking (Boundary issue):** Các điều khoản pháp lý dài hoặc có bảng biểu phức tạp (như điều kiện cấp song bằng kép hoặc bảng học phí chi tiết) bị chia cắt cơ học ở ranh giới ký tự (`CHUNK_SIZE = 500, OVERLAP = 50`). Cả Dense lẫn BM25 đôi khi chỉ lấy được một nửa bảng hoặc điều khoản, khiến Precision bị giảm ở một số case đặc thù.
 - **Tại sao không chọn cấu hình chỉ dựa vào Average Score:**  
-  Không thể chỉ nhìn vào điểm trung bình 0.936 vs 0.910 để kết luận. Nếu một cấu hình có điểm trung bình cao hơn nhưng lại đánh mất các bằng chứng sinh tử (như điều kiện miễn trừ học phí hoặc hạn nộp hồ sơ), hệ thống RAG sẽ trở nên nguy hiểm trong thực tế. Config B được chọn vì nó đồng thời cải thiện Recall ở các ca khó nhất và giữ nguyên tính an toàn của toàn hệ thống.
+  Không thể chỉ nhìn vào điểm trung bình 0.937 vs 0.911 để kết luận. Nếu một cấu hình có điểm trung bình cao hơn nhưng lại đánh mất các bằng chứng sinh tử (như điều kiện miễn trừ học phí hoặc hạn nộp hồ sơ), hệ thống RAG sẽ trở nên nguy hiểm trong thực tế. Config B được chọn vì nó đồng thời cải thiện Recall ở các ca khó nhất và giữ nguyên tính an toàn của toàn hệ thống.
 
 ---
 
