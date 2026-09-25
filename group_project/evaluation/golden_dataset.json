@@ -1,0 +1,127 @@
+[
+  {
+    "question": "Mức học phí niêm yết theo năm học của chương trình Cử nhân Điều dưỡng tại VinUni là bao nhiêu?",
+    "expected_answer": "Học phí niêm yết của chương trình Cử nhân Điều dưỡng là 349.650.000 VND/năm (tương đương 174.825.000 VND/kỳ hoặc 9.780.000 VND/tín chỉ).",
+    "expected_context": "Cử nhân Điều dưỡng 4 349.650.000/năm 174.825.000/kỳ học 9.780.000/tín chỉ"
+  },
+  {
+    "question": "Mức học phí niêm yết của chương trình Bác sĩ Y khoa và các ngành Cử nhân khác tại VinUni là bao nhiêu một năm?",
+    "expected_answer": "Học phí niêm yết của chương trình Bác sĩ Y khoa và các Cử nhân khác là 815.850.000 VND/năm (tương đương 407.925.000 VND/kỳ hoặc 27.195.000 VND/tín chỉ).",
+    "expected_context": "Bác sĩ Y khoa 6 815.850.000/năm 407.925.000/kỳ học 27.195.000/tín chỉ\nCử nhân khác 4 815.850.000/năm 407.925.000/kỳ học 27.195.000/tín chỉ"
+  },
+  {
+    "question": "Sinh viên VinUni phải đóng học phí thành mấy đợt trong một năm học và vào thời gian nào?",
+    "expected_answer": "Sinh viên đóng học phí theo 2 đợt trong một năm vào đầu các học kỳ chính theo thông báo hàng năm của Nhà trường.",
+    "expected_context": "Sinh viên sẽ đóng Học phí theo hai (02) đợt/năm vào đầu các học kỳ chính, theo lịch thông báo hàng năm của Nhà trường."
+  },
+  {
+    "question": "Mức phí xét tuyển hồ sơ vào trường Đại học VinUni là bao nhiêu và áp dụng khi nào?",
+    "expected_answer": "Mức phí xét tuyển hồ sơ là 2.000.000 đồng/lần/ứng viên khi được vào vòng phỏng vấn.",
+    "expected_context": "Phí xét tuyển hồ sơ là chi phí xử lý sàng lọc hồ sơ khi Ứng viên nộp hồ sơ dự tuyển vào Trường. Mức phí 2.000.000 đồng/lần/ứng viên được vào vòng phỏng vấn."
+  },
+  {
+    "question": "Những trường hợp nào ứng viên được miễn trừ phí xét tuyển hồ sơ tại VinUni?",
+    "expected_answer": "Ứng viên được xét miễn trừ phí xét tuyển hồ sơ khi tham gia các sự kiện tuyển sinh hoặc cuộc thi học thuật/ngoại khóa do VinUni hoặc các Viện tổ chức, hoặc có tên trong danh sách đề cử của Hiệu trưởng trường THPT.",
+    "expected_context": "Ứng viên được xét miễn trừ Phí xét tuyển hồ sơ trong các trường hợp: Tham gia các sự kiện tuyển sinh do Trường hoặc Viện tổ chức; Tham gia các cuộc thi học thuật hoặc ngoại khóa do Trường hoặc Viện tổ chức; Trong danh sách đề cử của Hiệu trưởng Trường THPT thí sinh theo học."
+  },
+  {
+    "question": "Chính sách học phí của VinUni có phân biệt giữa sinh viên Việt Nam và sinh viên quốc tế không?",
+    "expected_answer": "Không, học phí áp dụng một mức chung thống nhất cho cả sinh viên Việt Nam và sinh viên quốc tế.",
+    "expected_context": "Học phí áp dụng một mức chung cho Sinh viên Việt Nam và Sinh viên Quốc tế."
+  },
+  {
+    "question": "Bốn tiêu chí tuyển sinh toàn diện AACC của Đại học VinUni gồm những tiêu chí nào?",
+    "expected_answer": "Mô hình đánh giá toàn diện AACC gồm 4 tiêu chí: Năng lực học thuật vượt trội, Khát vọng, Tư duy sáng tạo, Nghị lực và Ý chí.",
+    "expected_context": "Quy trình tuyển sinh tại VinUni áp dụng theo mô hình đánh giá 'con người toàn diện' tương tự như các đại học Ivy League gồm 4 tiêu chí AACC (Năng lực học thuật vượt trội, Khát vọng, Tư duy sáng tạo, Nghị lực và Ý chí)."
+  },
+  {
+    "question": "Học bổng Tài năng (Merit-based) của VinUni gồm những mức tài trợ nào?",
+    "expected_answer": "Học bổng Tài năng gồm các mức 50%, 90%, 100% chi phí đào tạo và Học bổng toàn phần (bao gồm 100% học phí cùng trợ cấp sinh hoạt phí liên quan).",
+    "expected_context": "sinh viên được Hiệu trưởng và Viện trưởng đánh giá là Tài năng sẽ được cấp Học bổng Tài năng (merit based) ở mức 90% và 100% chi phí đào tạo. Riêng sinh viên Đặc biệt Tài năng sẽ được xét cấp Học bổng toàn phần, bao gồm 100% chi phí và sinh hoạt phí liên quan."
+  },
+  {
+    "question": "Các gói Hỗ trợ tài chính (Need-based) của VinUni hỗ trợ bao nhiêu phần trăm chi phí đào tạo?",
+    "expected_answer": "VinUni công bố các gói hỗ trợ tài chính với mức 50%, 70% và 80% chi phí đào tạo cho các sinh viên chưa đủ điều kiện tài chính.",
+    "expected_context": "VinUni cũng công bố các gói hỗ trợ tài chính (need based) với mức 50%, 70% và 80% chi phí đào tạo cho các sinh viên chưa đủ điều kiện tài chính."
+  },
+  {
+    "question": "Tập đoàn Vingroup hỗ trợ bao nhiêu phần trăm chi phí học tập cho toàn bộ sinh viên trong các niên khóa đầu tiên?",
+    "expected_answer": "Tập đoàn Vingroup cam kết hỗ trợ 35% chi phí học tập (tương đương khoảng 12.000 - 14.000 USD) cho tất cả sinh viên trong suốt thời gian học tập tại trường liên tục trong 5 niên khóa đầu tiên.",
+    "expected_context": "Tập đoàn Vingroup cam kết, liên tục trong 5 niên khóa đầu tiên, tất cả sinh viên sẽ được VinUni hỗ trợ 35% chi phí, tương đương với khoảng US$12.000- US$14.000 trong suốt thời gian học tập tại trường."
+  },
+  {
+    "question": "Lộ trình tuyển sinh năm học của VinUni gồm có những giai đoạn xét tuyển nào?",
+    "expected_answer": "Lộ trình tuyển sinh gồm 3 giai đoạn: Đợt tuyển sinh sớm Early, đợt tuyển sinh thường Regular và đợt tuyển sinh cuốn chiếu Rolling.",
+    "expected_context": "lộ trình tuyển sinh gồm 3 giai đoạn: Đợt tuyển sinh Early (kỳ sớm) từ ngày 15-10-2023 - 15-1-2024; Đợt Tuyển sinh Regular (kỳ thường) từ ngày 15-2 - 15-5-2024 và Đợt Tuyển sinh Rolling (kỳ cuốn chiếu) từ ngày 15-6 - 15-8-2024."
+  },
+  {
+    "question": "Thời gian công bố kết quả học bổng và hỗ trợ tài chính cho ứng viên sau khi xét duyệt là bao lâu?",
+    "expected_answer": "Ứng viên có thể biết kết quả về học bổng sau 1 tháng và kết quả hỗ trợ tài chính sau 2 tháng kể từ ngày xét duyệt hồ sơ.",
+    "expected_context": "ứng viên có thể biết kết quả về học bổng sau 1 tháng, kết quả hỗ trợ tài chính sau 2 tháng."
+  },
+  {
+    "question": "Trường Đại học VinUni hợp tác chiến lược toàn diện với những trường đại học nào trên thế giới?",
+    "expected_answer": "VinUni hợp tác chiến lược toàn diện với Đại học Cornell và Đại học Pennsylvania (2 trường trong nhóm Ivy League của Mỹ).",
+    "expected_context": "VinUni đã hợp tác chiến lược toàn diện với Đại học Cornell và Đại học Pennsylvania (2 trường trong nhóm Ivy League của Mỹ)."
+  },
+  {
+    "question": "Ứng viên có thành tích gì được xem xét tham gia Vòng tuyển sinh đặc biệt vào VinUni?",
+    "expected_answer": "Cơ chế tuyển sinh đặc biệt dành cho các học sinh đạt giải Olympic quốc gia, quốc tế hoặc tài năng kiệt xuất trong các lĩnh vực.",
+    "expected_context": "Cơ chế tuyển sinh đặc biệt cho học sinh đạt giải Olympic quốc gia, quốc tế hoặc tài năng kiệt xuất."
+  },
+  {
+    "question": "Quy định về việc chuyển đổi tín chỉ và học bổ sung tín chỉ tại VinUni được tính học phí như thế nào?",
+    "expected_answer": "Trường hợp sinh viên nhận phê duyệt chuyển đổi tín chỉ có điều kiện với học phần có yêu cầu học bổ sung thì học phí sẽ được xác định dựa trên số tín chỉ thực tế cho phần học bổ sung này.",
+    "expected_context": "Trường hợp sinh viên nhận phê duyệt chuyển đổi tín chỉ có điều kiện với học phần có yêu cầu học bổ sung (ví dụ thực hành/thí nghiệm) thì học phí sẽ được xác định dựa trên số tín chỉ thực tế cho phần học bổ sung này."
+  },
+  {
+    "question": "Ngôn ngữ giảng dạy và đánh giá chính thức tại Trường Đại học VinUni là ngôn ngữ nào?",
+    "expected_answer": "Tiếng Anh là ngôn ngữ giảng dạy và đánh giá tại VinUni đối với các hình thức học lý thuyết, thực hành và tự học bắt buộc.",
+    "expected_context": "Tiếng Anh sẽ là ngôn ngữ giảng dạy và đánh giá tại Trường đối với các hình thức học lý thuyết, thực hành và tự học bắt buộc, trừ trường hợp đặc biệt đối với một học phần hoặc một khóa học nào đó được Hội đồng trường chấp thuận."
+  },
+  {
+    "question": "Một tín chỉ tại VinUni được tính tương đương với bao nhiêu giờ học định mức của sinh viên?",
+    "expected_answer": "Một tín chỉ tại VinUni được tính tương đương với 50 giờ học định mức của sinh viên, bao gồm giờ học lý thuyết, giờ học có hướng dẫn, tự học - tự nghiên cứu, kiểm tra và đánh giá.",
+    "expected_context": "Một tín chỉ được tính tương đương với 50 giờ học định mức của sinh viên, bao gồm giờ học được giảng dạy (giờ học lý thuyết), giờ học có hướng dẫn, tự học – tự nghiên cứu, giờ học trải nghiệm, kiểm tra, và đánh giá."
+  },
+  {
+    "question": "Một tín chỉ lý thuyết tại VinUni được quy định bằng bao nhiêu giờ học lý thuyết trên lớp?",
+    "expected_answer": "Một tín chỉ được quy định bằng 15 giờ học lý thuyết trên lớp.",
+    "expected_context": "Một tín chỉ được quy định bằng 15 giờ học lý thuyết; 30 - 45 giờ học thực hành, thí nghiệm hoặc thảo luận; 45 - 90 giờ thực tập tại cơ sở"
+  },
+  {
+    "question": "Thời gian hoạt động giảng dạy tiêu chuẩn trong tuần tại VinUni được quy định như thế nào?",
+    "expected_answer": "Thời gian hoạt động giảng dạy tiêu chuẩn được tính từ 09 giờ sáng đến 05 giờ chiều từ thứ 2 đến thứ 6.",
+    "expected_context": "Thời gian hoạt động giảng dạy tiêu chuẩn được tính từ 09 giờ sáng đến 05 giờ chiều từ thứ 2 đến thứ 6, phụ thuộc vào hình thức lớp học chính quy hoặc thực hành thí nghiệm hay các hình thức tương tự."
+  },
+  {
+    "question": "Thời lượng tiêu chuẩn của một tiết học tại VinUni kéo dài bao nhiêu phút?",
+    "expected_answer": "Thời lượng một tiết học kéo dài 50 phút hoặc 75 phút.",
+    "expected_context": "Thời lượng: Một tiết học kéo dài 50 phút hoặc 75 phút. Trường hợp lớp học kéo dài hơn thời gian quy định cần có phê duyệt của Hiệu trưởng trước khi triển khai."
+  },
+  {
+    "question": "Tổng số tín chỉ tối thiểu mà sinh viên hệ chính quy tại VinUni cần đăng ký trong một học kỳ chính là bao nhiêu?",
+    "expected_answer": "Tổng số tín chỉ cần đăng ký tối thiểu của một học kỳ chính là 12 tín chỉ đối với sinh viên hệ chính quy.",
+    "expected_context": "Điều 11 - tổng số tín chỉ cần đăng ký tối thiểu của một kỳ học là 12 tín chỉ đối với sinh viên hệ chính quy."
+  },
+  {
+    "question": "Trong một năm học, khối lượng tín chỉ toàn thời gian thông thường mà sinh viên chính quy VinUni phải hoàn thành là bao nhiêu?",
+    "expected_answer": "Khối lượng tín chỉ toàn thời gian một năm học thông thường sinh viên phải hoàn thành là 30 tín chỉ.",
+    "expected_context": "Thông thường khối lượng tín chỉ toàn thời gian một năm học phải hoàn thành là 30 tín chỉ."
+  },
+  {
+    "question": "Quy định về điều kiện để sinh viên được cấp bằng kép (học song bằng) tại VinUni là gì?",
+    "expected_answer": "Sinh viên có thể được nhận hai bằng nếu hoàn thành đầy đủ yêu cầu của cả hai bằng; nếu chỉ hoàn thành yêu cầu một bằng thì không được cấp bằng kép.",
+    "expected_context": "Sinh viên có thể được nhận hai bằng nếu hoàn thành đầy đủ yêu cẩu của cả hai bằng. Nếu sinh viên hoàn thành yêu cầu của hai chương trình chuyên ngành, nhưng lại chỉ hoàn thành yêu cầu một bằng thì sẽ không được cấp bằng kép."
+  },
+  {
+    "question": "Năm học 2024 - 2025, VinUni tuyển sinh các ngành mới nào thuộc Viện Khoa học và Giáo dục khai phóng?",
+    "expected_answer": "VinUni mở các ngành mới thuộc Viện Khoa học và Giáo dục khai phóng gồm Cử nhân các ngành: Truyền thông đa phương tiện, Tâm lý học, và Kinh tế.",
+    "expected_context": "Cử nhân các ngành: Truyền thông đa phương tiện, Tâm lý học, Kinh tế(Viện Khoa học và Giáo dục khai phóng). Đây là năm đầu tiên VinUni mở các ngành mới thuộc Viện Khoa học vào Giáo dục khai phong"
+  },
+  {
+    "question": "Chương trình Quỹ Học bổng chân trời mới của VinUni dành cho bao nhiêu ứng viên xuất sắc trong đợt tuyển sinh đầu tiên và trị giá mỗi suất là bao nhiêu?",
+    "expected_answer": "Quỹ Học bổng chân trời mới trao 30 suất học bổng cho 30 ứng viên đầu tiên xuất sắc trúng tuyển nhập học, mỗi suất trị giá 50 triệu đồng khấu trừ thẳng vào học phí học kỳ đầu tiên.",
+    "expected_context": "VinUni sẽ trao 30 suất học bổng từ 'Quỹ Học bổng chân trời mới' dành cho 30 ứng viên đầu tiên xuất sắc trúng tuyển nhập học, mỗi suất trị giá 50 triệu đồng (khấu trừ thẳng vào học phí học kỳ đầu tiên)."
+  }
+]
