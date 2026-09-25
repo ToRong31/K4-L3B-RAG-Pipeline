@@ -11,14 +11,35 @@ Luồng xử lý:
 Không so sánh threshold với RRF score vì hai thang đo khác nhau.
 """
 
+import os
+
+from dotenv import load_dotenv
+
+from .cohere_reranking import cohere_rerank
+from .query_formulation import formulate_query
+from .task5_e5_search import e5_search
 from .task5_semantic_search import semantic_search
 from .task6_lexical_search import lexical_search
-from .task7_reranking import rerank_rrf
+from .task7_reranking import rerank_rrf, rerank_rrf_weighted
 from .task8_pageindex_vectorless import pageindex_search
 
 
-SCORE_THRESHOLD = 0.3
+load_dotenv()
+
+SCORE_THRESHOLD = float(os.getenv("SCORE_THRESHOLD") or "0.3")
 DEFAULT_TOP_K = 5
+
+
+def _search_bilingual(search, query_vi: str, query_en: str, top_k: int) -> list[dict]:
+    """Merge translations within one model branch before weighted RRF."""
+    results = search(query_vi, top_k=top_k)
+    if query_en and query_en.casefold() != query_vi.casefold():
+        by_id = {item["id"]: item for item in results}
+        for item in search(query_en, top_k=top_k):
+            if item["id"] not in by_id or item["score"] > by_id[item["id"]]["score"]:
+                by_id[item["id"]] = item
+        results = sorted(by_id.values(), key=lambda item: item["score"], reverse=True)
+    return results[:top_k]
 
 
 def retrieve(
@@ -28,25 +49,64 @@ def retrieve(
     use_reranking: bool = True,
 ) -> list[dict]:
     """Trả về hybrid hoặc pageindex SearchResult."""
-    # TODO: Implement full retrieval pipeline.
-    #
-    # dense = semantic_search(query, top_k=top_k * 2)
-    # sparse = lexical_search(query, top_k=top_k * 2)
-    # hybrid = (
-    #     rerank_rrf([dense, sparse], top_k=top_k)
-    #     if use_reranking else dense[:top_k]
-    # )
-    #
-    # best_dense_score = dense[0]["score"] if dense else 0.0
-    # if best_dense_score < score_threshold:
-    #     try:
-    #         fallback = pageindex_search(query, top_k=top_k)
-    #         if fallback:
-    #             return fallback
-    #     except Exception:
-    #         pass
-    # return hybrid[:top_k]
-    raise NotImplementedError("Implement retrieve")
+    if not query.strip() or top_k <= 0:
+        return []
+    query_vi, query_en = formulate_query(query)
+    dense_backend = os.getenv("DENSE_BACKEND", "shared").lower()
+    if dense_backend == "e5":
+        primary_search, secondary_search = e5_search, semantic_search
+    elif dense_backend == "shared":
+        primary_search, secondary_search = semantic_search, e5_search
+    else:
+        raise ValueError("DENSE_BACKEND must be 'e5' or 'shared'")
+    dense = _search_bilingual(primary_search, query_vi, query_en, top_k * 2)
+    secondary_dense = []
+    if os.getenv("MULTI_DENSE_ENABLED", "false").lower() == "true":
+        try:
+            secondary_dense = _search_bilingual(secondary_search, query_vi, query_en, top_k * 2)
+        except Exception:
+            secondary_dense = []
+    try:
+        sparse = lexical_search(query_vi, top_k=top_k * 2)
+    except Exception:
+        sparse = []
+    use_cohere = (
+        use_reranking
+        and os.getenv("COHERE_RERANK_ENABLED", "false").lower() == "true"
+        and bool(os.getenv("COHERE_API_KEY"))
+    )
+    candidate_k = top_k * 3 if use_cohere else top_k
+    if use_reranking:
+        dense_branches = [branch for branch in (dense, secondary_dense) if branch]
+        ranked_lists = dense_branches + [sparse]
+        if os.getenv("HYBRID_WEIGHTED_ENABLED", "true").lower() == "true":
+            dense_weight = float(os.getenv("HYBRID_DENSE_WEIGHT", "0.7"))
+            keyword_weight = float(os.getenv("HYBRID_BM25_WEIGHT", "0.3"))
+            weights = (
+                [dense_weight / len(dense_branches)] * len(dense_branches) + [keyword_weight]
+                if dense_branches else [1.0]
+            )
+            hybrid = rerank_rrf_weighted(
+                ranked_lists, weights,
+                top_k=candidate_k,
+            )
+        else:
+            hybrid = rerank_rrf(ranked_lists, top_k=candidate_k)
+    else:
+        hybrid = (dense or secondary_dense)[:top_k]
+    openai_dense = dense if dense_backend == "shared" else secondary_dense
+    fallback_dense = openai_dense or dense or secondary_dense
+    best_dense_score = max((item["score"] for item in fallback_dense), default=0.0)
+    if best_dense_score < score_threshold:
+        try:
+            fallback = pageindex_search(query, top_k=top_k)
+            if fallback:
+                return fallback[:top_k]
+        except Exception:
+            pass
+    if use_cohere:
+        return cohere_rerank(query_vi, hybrid, top_k)
+    return hybrid[:top_k]
 
 
 if __name__ == "__main__":

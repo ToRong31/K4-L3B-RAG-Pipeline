@@ -82,3 +82,45 @@ pytest tests/test_acceptance.py -q
 # Toàn bộ
 pytest -q
 ```
+
+## Thiết lập retrieval của Trọng
+
+Hiện tại dùng OpenAI `text-embedding-3-large` làm nhánh dense. Đặt
+`DENSE_BACKEND=shared`, `MULTI_DENSE_ENABLED=false`, `EMBEDDING_PROVIDER=openai` và
+`EMBEDDING_MODEL=text-embedding-3-large` trong `.env`, rồi chạy Task 4 để tạo
+Chroma collection OpenAI trên 396 chunk chung:
+
+```bash
+python -m src.task4_chunking_indexing
+```
+
+Khởi động Docker Desktop, chạy `docker compose up -d elasticsearch`, rồi
+đồng bộ chính các chunk từ `chunk_documents(load_documents())` vào BM25 bằng
+`python -m src.task6_lexical_search`. Nếu Elasticsearch tạm thời không chạy,
+`BM25_LOCAL_FALLBACK=true` dùng BM25 trong bộ nhớ trên cùng corpus.
+
+Khi cần bật dense thứ hai `intfloat/multilingual-e5-large`, tạo E5 collection riêng bằng:
+
+```bash
+python -m pip install -e ".[e5]"
+python -m src.task5_e5_search
+```
+
+Lệnh index E5 dùng cùng chunk ID/content/metadata của Task 4. Đặt
+`DENSE_BACKEND=e5` và `MULTI_DENSE_ENABLED=true`: weighted RRF gộp E5 **0.35**,
+OpenAI **0.35**, BM25 **0.30** đúng một lần. Nếu E5 chưa có index, OpenAI nhận
+toàn bộ trọng số dense **0.70**. Mỗi nhánh dense gộp trùng ID giữa query Việt
+và Anh trước RRF. Fallback so `SCORE_THRESHOLD` với cosine OpenAI gốc khi có
+nhánh này, không so với điểm RRF hoặc Cohere.
+
+`retrieve(query, top_k, score_threshold, use_reranking)` giữ nguyên chữ ký.
+Muốn dùng PageIndex, điền `PAGEINDEX_API_KEY`, sau đó chạy
+`python -m src.task8_pageindex_vectorless` để upload PDF chính sách một lần.
+Chờ PageIndex xử lý xong trước khi demo fallback. Nếu PageIndex không sẵn sàng,
+retrieval trả kết quả hybrid.
+
+Để bật một lần gọi OpenAI tạo `query_vi` và `query_en`, đặt
+`QUERY_FORMULATION_ENABLED=true`. Dense tìm cả hai query rồi gộp trùng ID;
+BM25 dùng `query_vi`. Để bật Cohere sau RRF, điền `COHERE_API_KEY` và đặt
+`COHERE_RERANK_ENABLED=true`. Nếu hai dịch vụ này lỗi, retrieval tiếp tục với
+query gốc hoặc thứ hạng RRF. `use_reranking=False` giữ chế độ dense-only cho A/B.
