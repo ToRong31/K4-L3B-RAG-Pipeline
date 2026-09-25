@@ -1,0 +1,4 @@
+[server]
+# Transformers exposes lazy modules that Streamlit's file watcher probes as imports.
+# Disable automatic source watching to avoid optional torchvision import warnings.
+fileWatcherType = "none"

@@ -124,6 +124,12 @@ def generate_with_citation(query: str, top_k: int = TOP_K) -> dict[str, Any]:
     except Exception:
         chunks = []
 
+    return generate_from_chunks(query, chunks)
+
+
+def generate_from_chunks(query: str, chunks: list[dict]) -> dict[str, Any]:
+    """Generate from results already retrieved by a caller with custom options."""
+
     if not chunks:
         return {
             "answer": SAFE_REFUSAL_ANSWER,

@@ -29,6 +29,16 @@ cp .env.example .env
 
 Điền API key cần dùng trong `.env`; không commit file này.
 
+Trên Windows PowerShell, nếu chưa kích hoạt môi trường ảo, gọi Python trong
+`.venv` trực tiếp để test và chạy giao diện (lệnh `pytest` trần có thể dùng
+Python toàn máy và thiếu thư viện của dự án):
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+.\.venv\Scripts\python.exe -m pytest tests/test_contracts.py -q
+.\.venv\Scripts\python.exe -m streamlit run app.py
+```
+
 ```bash
 # 1. Thu thập và chuẩn hoá
 python -m src.task1_collect_legal_docs

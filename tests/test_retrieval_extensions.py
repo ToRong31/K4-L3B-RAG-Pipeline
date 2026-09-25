@@ -301,3 +301,17 @@ def test_e5_and_openai_fuse_35_each_and_openai_handles_missing_e5(monkeypatch):
     pipeline.retrieve("học phí", top_k=3, score_threshold=0.5)
     assert [branch[0]["id"] for branch in calls[0][0]] == ["openai", "bm25"]
     assert calls[0][1] == [0.7, 0.3]
+
+
+def test_generation_uses_preselected_chunks_without_retrieving_again(monkeypatch):
+    import src.task10_generation as generation
+
+    chunk = _result("selected", 0.9)
+    monkeypatch.setattr(generation, "retrieve", lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("retrieved twice")))
+    monkeypatch.setattr(generation, "call_llm", lambda system, prompt: "Có bằng chứng [Document 1].")
+
+    output = generation.generate_from_chunks("Học phí?", [chunk])
+
+    assert output["sources"] == [chunk]
+    assert output["retrieval_source"] == "hybrid"
+    assert "ID: selected" in generation.format_context(output["sources"])

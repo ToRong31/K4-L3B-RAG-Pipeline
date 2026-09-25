@@ -4,7 +4,8 @@ from datetime import datetime
 import streamlit as st
 from dotenv import load_dotenv
 
-from src.task10_generation import generate_with_citation, reorder_for_llm, format_context
+from src.task10_generation import generate_from_chunks, reorder_for_llm, format_context
+from src.task9_retrieval_pipeline import retrieve
 
 
 load_dotenv()
@@ -152,32 +153,59 @@ with st.sidebar:
     
     top_k = st.slider("🎯 Số lượng chunks (top_k)", min_value=3, max_value=10, value=5, help="Số lượng đoạn văn bản tối đa được đưa vào Context cho LLM.")
     score_threshold = st.slider("🛡️ Ngưỡng Fallback (Score Threshold)", min_value=0.1, max_value=0.9, value=0.3, step=0.05, help="Nếu điểm tương đồng Dense < ngưỡng này, hệ thống sẽ kích hoạt Fallback guardrail.")
-    use_rerank = st.toggle("⚡ Bật RRF Reranking (Dense + BM25)", value=True, help="Hợp nhất kết quả Dense và BM25 bằng thuật toán Reciprocal Rank Fusion.")
+    use_rerank = st.toggle("⚡ Bật hybrid retrieval", value=True, help="Bật BM25 + RRF; Cohere chạy sau RRF nếu đã cấu hình. Tắt để tìm kiếm dense-only.")
     
     st.divider()
     
     st.markdown("### 🧠 Mô hình & Nền tảng")
     provider = os.getenv("LLM_PROVIDER", "openai").upper()
     model = os.getenv("LLM_MODEL") or "gpt-4o-mini"
+    dense_backend = os.getenv("DENSE_BACKEND", "shared").lower()
+    embedding_model = os.getenv("EMBEDDING_MODEL", "keepitreal/vietnamese-sbert")
+    e5_model = os.getenv("E5_MODEL", "intfloat/multilingual-e5-large")
+    if dense_backend == "e5":
+        embedding_model, e5_model = e5_model, embedding_model
+    if os.getenv("MULTI_DENSE_ENABLED", "false").lower() == "true":
+        embedding_model = f"{embedding_model} + {e5_model}"
+    bm25_backend = "Elasticsearch BM25"
+    if os.getenv("BM25_LOCAL_FALLBACK", "true").lower() == "true":
+        bm25_backend += " (fallback local)"
+    dense_weight = os.getenv("HYBRID_DENSE_WEIGHT", "0.7")
+    bm25_weight = os.getenv("HYBRID_BM25_WEIGHT", "0.3")
+    fusion_status = (
+        f"Weighted RRF (k=60; dense {dense_weight}, BM25 {bm25_weight})"
+        if use_rerank else "Tắt (dense-only)"
+    )
+    cohere_model = os.getenv("COHERE_RERANK_MODEL", "rerank-v4.0-fast")
+    if not use_rerank:
+        cohere_status = "Tắt (dense-only)"
+    elif os.getenv("COHERE_RERANK_ENABLED", "false").lower() != "true":
+        cohere_status = "Tắt trong .env"
+    elif not os.getenv("COHERE_API_KEY"):
+        cohere_status = "Tắt (chưa có API key)"
+    else:
+        cohere_status = f"Bật: {cohere_model} (sau RRF)"
     st.markdown(f"""
     - **LLM Engine:** `{provider}`
     - **Model:** `{model}`
-    - **Embedding:** `BAAI/bge-m3` (1024 dims)
+    - **Embedding:** `{embedding_model}`
     - **Vector Store:** `ChromaDB (Cosine)`
-    - **Lexical Search:** `BM25Okapi`
-    - **Fusion:** `RRF (k=60)`
+    - **Lexical Search:** `{bm25_backend}`
+    - **Fusion:** `{fusion_status}`
+    - **Cohere Rerank:** `{cohere_status}`
     """)
+    st.caption("PageIndex fallback trả kết quả trực tiếp; nhánh này không chạy Cohere.")
     
     st.divider()
     
     col_btn1, col_btn2 = st.columns(2)
     with col_btn1:
-        if st.button("🗑️ Xóa chat", use_container_width=True):
+        if st.button("🗑️ Xóa chat", width="stretch"):
             st.session_state.messages = []
             st.session_state.last_trace = None
             st.rerun()
     with col_btn2:
-        if st.button("🔄 Làm mới", use_container_width=True):
+        if st.button("🔄 Làm mới", width="stretch"):
             st.rerun()
 
 # HEADER BANNER CHÍNH
@@ -208,13 +236,13 @@ with tab_chat:
         c1, c2, c3 = st.columns(3)
         sample_query = None
         with c1:
-            if st.button("📜 Tiêu chuẩn xét học bổng là gì?", use_container_width=True):
+            if st.button("📜 Tiêu chuẩn xét học bổng là gì?", width="stretch"):
                 sample_query = "Tiêu chuẩn xét học bổng là gì?"
         with c2:
-            if st.button("💰 Quy định và thời hạn nộp học phí?", use_container_width=True):
+            if st.button("💰 Quy định và thời hạn nộp học phí?", width="stretch"):
                 sample_query = "Quy định và thời hạn nộp học phí?"
         with c3:
-            if st.button("❓ Thời tiết hôm nay ở Hà Nội thế nào?", use_container_width=True, help="Câu hỏi ngoài domain để test Safe Refusal"):
+            if st.button("❓ Thời tiết hôm nay ở Hà Nội thế nào?", width="stretch", help="Câu hỏi ngoài domain để test Safe Refusal"):
                 sample_query = "Thời tiết hôm nay ở Hà Nội thế nào?"
     else:
         sample_query = None
@@ -227,7 +255,7 @@ with tab_chat:
             # Hiển thị trích dẫn nguồn
             if message["role"] == "assistant" and message.get("sources"):
                 srcs = message["sources"]
-                ret_src = message.get("retrieval_source", "hybrid")
+                ret_src = message.get("retrieval_mode", message.get("retrieval_source", "hybrid"))
                 with st.expander(f"📚 Xem {len(srcs)} tài liệu trích dẫn xác thực (Phương thức: {ret_src.upper()})"):
                     for idx, src in enumerate(srcs, 1):
                         meta = src.get("metadata", {})
@@ -260,13 +288,22 @@ with tab_chat:
             with st.spinner("🔍 Đang truy xuất tài liệu, chạy RRF Reranking và kiểm chứng trích dẫn..."):
                 start_time = time.time()
                 
-                # Gọi hàm generation chuẩn từ task10
-                result = generate_with_citation(active_query, top_k=top_k)
+                # Truy xuất theo đúng tuỳ chọn trên giao diện, rồi tạo câu trả lời từ các chunks đó.
+                try:
+                    chunks = retrieve(active_query, top_k=top_k, score_threshold=score_threshold, use_reranking=use_rerank)
+                except Exception:
+                    chunks = []
+                result = generate_from_chunks(active_query, chunks)
                 latency = time.time() - start_time
                 
                 answer = result["answer"]
                 sources = result.get("sources", [])
                 retrieval_source = result.get("retrieval_source", "none")
+                retrieval_mode = (
+                    "pageindex" if retrieval_source == "pageindex"
+                    else "dense-only" if not use_rerank and sources
+                    else retrieval_source
+                )
                 
                 # Lưu trace chi tiết cho tab telemetry
                 trace_data = {
@@ -274,9 +311,12 @@ with tab_chat:
                     "query": active_query,
                     "answer": answer,
                     "top_k": top_k,
+                    "score_threshold": score_threshold,
+                    "use_reranking": use_rerank,
                     "latency_sec": round(latency, 3),
                     "sources_count": len(sources),
                     "retrieval_source": retrieval_source,
+                    "retrieval_mode": retrieval_mode,
                     "sources": sources,
                     "is_refusal": (len(sources) == 0 or retrieval_source == "none"),
                 }
@@ -288,7 +328,7 @@ with tab_chat:
                 
                 # Hiển thị trích dẫn trực tiếp dưới câu trả lời
                 if sources:
-                    with st.expander(f"📚 Xem {len(sources)} tài liệu trích dẫn xác thực (Phương thức: {retrieval_source.upper()})"):
+                    with st.expander(f"📚 Xem {len(sources)} tài liệu trích dẫn xác thực (Phương thức: {retrieval_mode.upper()})"):
                         for idx, src in enumerate(sources, 1):
                             meta = src.get("metadata", {})
                             title = meta.get("title", "Tài liệu quy định")
@@ -313,6 +353,7 @@ with tab_chat:
             "content": answer,
             "sources": sources,
             "retrieval_source": retrieval_source,
+            "retrieval_mode": retrieval_mode,
         })
         st.rerun()
 
@@ -347,7 +388,7 @@ with tab_telemetry:
         with m3:
             st.markdown(f"""
             <div class="metric-card">
-                <div class="metric-val" style="color: {'#10b981' if trace['retrieval_source'] == 'hybrid' else '#f59e0b'};">{trace['retrieval_source'].upper()}</div>
+                <div class="metric-val" style="color: {'#10b981' if trace['retrieval_source'] == 'hybrid' else '#f59e0b'};">{trace.get('retrieval_mode', trace['retrieval_source']).upper()}</div>
                 <div class="metric-lbl">📡 Retrieval Method</div>
             </div>
             """, unsafe_allow_html=True)
@@ -356,7 +397,7 @@ with tab_telemetry:
             st.markdown(f"""
             <div class="metric-card">
                 <div class="metric-val">{max_score:.4f}</div>
-                <div class="metric-lbl">🏆 Best Score</div>
+                <div class="metric-lbl">🏆 Best Output Score</div>
             </div>
             """, unsafe_allow_html=True)
         with m5:
@@ -388,23 +429,24 @@ with tab_telemetry:
             """, unsafe_allow_html=True)
 
             # Stage 2: Dual-Path Search (Dense + BM25)
-            st.markdown("""
+            st.markdown(f"""
             <div class="pipeline-step">
                 <div class="step-header">🔹 Stage 2: Hai đường tìm kiếm song song (Task 5 & 6)</div>
                 <p style="font-size: 13px; color: #475569; margin: 0;">
                     • <b>Dense Search:</b> Embedding query và tính <code>max(0, 1 - distance)</code><br>
-                    • <b>Lexical Search:</b> Tokenize và xếp hạng BM25Okapi trên cùng tập corpus<br>
+                    • <b>Lexical Search:</b> {bm25_backend} trên cùng tập corpus<br>
                     • <b>Ứng viên mỗi nhánh:</b> <code>top_k * 2</code> để phục vụ tái xếp hạng
                 </p>
             </div>
             """, unsafe_allow_html=True)
 
             # Stage 3: Reranking & RRF Formula
-            st.markdown("""
+            st.markdown(f"""
             <div class="pipeline-step">
                 <div class="step-header">🔹 Stage 3: Hợp nhất Reciprocal Rank Fusion (Task 7)</div>
                 <p style="font-size: 13px; color: #475569; margin: 0;">
-                    • <b>Công thức:</b> <code>RRF(d) = Σ [ 1 / (60 + rank_i) ]</code><br>
+                    • <b>Trạng thái:</b> {'Đã bật hybrid RRF' if trace.get('use_reranking', True) else 'Dense-only; bỏ qua BM25, RRF và Cohere'}<br>
+                    • <b>Công thức khi bật:</b> <code>RRF(d) = Σ [ weight_i / (60 + rank_i) ]</code><br>
                     • <b>Invariant:</b> RRF chỉ chạy duy nhất 1 lần, lọc trùng ID và xếp giảm dần<br>
                     • <b>Lưu ý:</b> Điểm RRF chỉ đại diện thứ hạng, không dùng để kích hoạt fallback
                 </p>
@@ -413,16 +455,16 @@ with tab_telemetry:
 
         with col_right:
             # Stage 4: Fallback Guardrail
-            dense_confidence = max_score
-            is_fallback_triggered = dense_confidence < score_threshold
+            fallback_used = trace['retrieval_source'] == 'pageindex'
+            threshold_used = trace.get('score_threshold', score_threshold)
             st.markdown(f"""
             <div class="pipeline-step">
                 <div class="step-header">🔹 Stage 4: Kiểm soát ngưỡng Fallback (Task 8 & 9)</div>
                 <p style="font-size: 13px; color: #475569; margin: 0;">
-                    • <b>Ngưỡng cài đặt (Threshold):</b> <code>{score_threshold}</code><br>
-                    • <b>Best Dense Score gốc:</b> <code>{dense_confidence:.4f}</code><br>
-                    • <b>Trạng thái:</b> <span style="color: {'#ef4444' if is_fallback_triggered else '#10b981'}; font-weight: 600;">
-                        {'Kích hoạt Fallback (Score < Threshold)' if is_fallback_triggered else 'Đủ tin cậy (Score >= Threshold)'}
+                    • <b>Ngưỡng đã dùng (Threshold):</b> <code>{threshold_used}</code><br>
+                    • <b>Kiểm tra:</b> Task 9 so ngưỡng với cosine dense gốc.<br>
+                    • <b>Kết quả:</b> <span style="color: {'#f59e0b' if fallback_used else '#10b981'}; font-weight: 600;">
+                        {'Đã dùng PageIndex fallback' if fallback_used else 'Không dùng kết quả PageIndex'}
                     </span>
                 </p>
             </div>
@@ -457,7 +499,7 @@ with tab_telemetry:
                     "Kênh": s.get("retrieval_method", "N/A"),
                     "Trích đoạn": s.get("content", "")[:120] + "..."
                 })
-            st.dataframe(source_rows, use_container_width=True)
+            st.dataframe(source_rows, width="stretch")
         else:
             st.warning("Không có chunks nào được trích xuất (Trường hợp câu hỏi ngoài domain hoặc cơ sở dữ liệu chưa có dữ liệu tương ứng).")
 
