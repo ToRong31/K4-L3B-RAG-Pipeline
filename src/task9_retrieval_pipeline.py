@@ -12,6 +12,7 @@ Không so sánh threshold với RRF score vì hai thang đo khác nhau.
 """
 
 import os
+from contextvars import ContextVar
 
 from dotenv import load_dotenv
 
@@ -28,6 +29,12 @@ load_dotenv()
 
 SCORE_THRESHOLD = float(os.getenv("SCORE_THRESHOLD") or "0.3")
 DEFAULT_TOP_K = 5
+_last_retrieval_trace: ContextVar[dict] = ContextVar("last_retrieval_trace", default={})
+
+
+def get_last_retrieval_trace() -> dict:
+    """Return query details from the latest retrieve call in this execution context."""
+    return dict(_last_retrieval_trace.get())
 
 
 def _search_bilingual(search, query_vi: str, query_en: str, top_k: int) -> list[dict]:
@@ -49,9 +56,21 @@ def retrieve(
     use_reranking: bool = True,
 ) -> list[dict]:
     """Trả về hybrid hoặc pageindex SearchResult."""
+    _last_retrieval_trace.set({
+        "query_vi": "", "query_en": "", "dense_queries": [], "bm25_query": "",
+    })
     if not query.strip() or top_k <= 0:
         return []
     query_vi, query_en = formulate_query(query)
+    dense_queries = [query_vi]
+    if query_en and query_en.casefold() != query_vi.casefold():
+        dense_queries.append(query_en)
+    _last_retrieval_trace.set({
+        "query_vi": query_vi,
+        "query_en": query_en,
+        "dense_queries": dense_queries,
+        "bm25_query": query_vi,
+    })
     dense_backend = os.getenv("DENSE_BACKEND", "shared").lower()
     if dense_backend == "e5":
         primary_search, secondary_search = e5_search, semantic_search

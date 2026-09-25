@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 from src.task10_generation import generate_from_chunks, reorder_for_llm, format_context
 from src.task9_retrieval_pipeline import retrieve
+import src.task9_retrieval_pipeline as retrieval_pipeline
 
 
 load_dotenv()
@@ -293,6 +294,7 @@ with tab_chat:
                     chunks = retrieve(active_query, top_k=top_k, score_threshold=score_threshold, use_reranking=use_rerank)
                 except Exception:
                     chunks = []
+                retrieval_details = getattr(retrieval_pipeline, "get_last_retrieval_trace", lambda: {})()
                 result = generate_from_chunks(active_query, chunks)
                 latency = time.time() - start_time
                 
@@ -309,6 +311,7 @@ with tab_chat:
                 trace_data = {
                     "timestamp": datetime.now().strftime("%H:%M:%S"),
                     "query": active_query,
+                    **retrieval_details,
                     "answer": answer,
                     "top_k": top_k,
                     "score_threshold": score_threshold,
@@ -411,6 +414,11 @@ with tab_telemetry:
             """, unsafe_allow_html=True)
 
         st.markdown("---")
+
+        st.markdown("#### 🔎 Query formulation dùng cho retrieval")
+        st.write(f"**Tiếng Việt / BM25:** {trace.get('query_vi') or 'Không có'}")
+        st.write(f"**Tiếng Anh / dense:** {trace.get('query_en') or 'Không tạo được; dense dùng query tiếng Việt'}")
+        st.caption("Dense tìm bằng các query trong `dense_queries`; BM25 dùng `bm25_query`. Các giá trị này lấy từ chính lượt retrieve ở trên.")
 
         # CHI TIẾT TỪNG GIAI ĐOẠN TRONG PIPELINE
         col_left, col_right = st.columns([1, 1])

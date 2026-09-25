@@ -315,3 +315,26 @@ def test_generation_uses_preselected_chunks_without_retrieving_again(monkeypatch
     assert output["sources"] == [chunk]
     assert output["retrieval_source"] == "hybrid"
     assert "ID: selected" in generation.format_context(output["sources"])
+
+
+def test_retrieval_trace_records_formulated_queries_without_second_request(monkeypatch):
+    import src.task9_retrieval_pipeline as pipeline
+
+    calls = []
+
+    def formulate(query):
+        calls.append(query)
+        return "thời hạn nộp học phí", "tuition payment deadline"
+
+    monkeypatch.setattr(pipeline, "formulate_query", formulate)
+    monkeypatch.setattr(pipeline, "semantic_search", lambda query, top_k: [_result("a", 0.9)])
+    monkeypatch.setattr(pipeline, "lexical_search", lambda query, top_k: [])
+    pipeline.retrieve("Quy định và thời hạn nộp học phí?", top_k=1, score_threshold=0.3)
+
+    assert calls == ["Quy định và thời hạn nộp học phí?"]
+    assert pipeline.get_last_retrieval_trace() == {
+        "query_vi": "thời hạn nộp học phí",
+        "query_en": "tuition payment deadline",
+        "dense_queries": ["thời hạn nộp học phí", "tuition payment deadline"],
+        "bm25_query": "thời hạn nộp học phí",
+    }

@@ -72,15 +72,17 @@ def call_llm(system_prompt: str, user_message: str) -> str:
         if not api_key:
             raise ValueError("OPENAI_API_KEY is not configured")
         client = OpenAI(api_key=api_key)
-        response = client.chat.completions.create(
-            model=model or "gpt-4o-mini",
-            messages=[
+        selected_model = model or "gpt-4o-mini"
+        options = {
+            "model": selected_model,
+            "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_message},
             ],
-            temperature=TEMPERATURE,
-            top_p=TOP_P,
-        )
+        }
+        if not selected_model.startswith("gpt-6-"):
+            options.update(temperature=TEMPERATURE, top_p=TOP_P)
+        response = client.chat.completions.create(**options)
         return response.choices[0].message.content or ""
 
     if provider == "gemini":
