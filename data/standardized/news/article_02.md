@@ -1,0 +1,75 @@
+# Cấp học bổng, hỗ trợ tài chính hào phóng: VinUni liệu có thu hút được nhân tài?
+
+**Source:** https://dantri.com.vn/giao-duc/cap-hoc-bong-ho-tro-tai-chinh-hao-phong-vinuni-lieu-co-thu-hut-duoc-nhan-tai-20191113144501267.htm
+
+**Crawled:** 2026-09-25T10:06:20.737182
+
+---
+
+### (Dân trí) - Dự kiến, chi phí đào tạo trung bình hàng năm cho mỗi sinh viên tại trường Đại học VinUni là US$ 35.000 với hệ đại học và US$ 40.000 với hệ sau đại học. Với mức học phí siêu đắt như vậy ở Việt Nam liệu có chọn được người tài như trường mong muốn?
+
+Tuyển chọn nhân tài theo cơ chế thế giới
+
+Dự án Đại học VinUni vừa công bố định hướngtuyển sinhcho năm học 2020 - 2021, trong đó dự kiến mức học phí siêu đắt so với các trường đại học ở Việt Nam. Cụ thể:
+
+Chi phí đào tạo trung bình hàng năm (gồm giảng dạy, nghiên cứu, thực tập, trao đổi quốc tế, học kỳdoanh nghiệpvà các chi phí đầu tư liên quan...) cho mỗi sinh viên tại trường Đại học VinUni là US$ 35.000 với hệ đại học và US$ 40.000 với hệ sau đại học.
+
+Tuy nhiên, sinh viên được Hiệu trưởng và Viện trưởng đánh giá là Tài năng sẽ được cấp Học bổng Tài năng (merit based) ở mức 90% và 100% chi phí đào tạo. Riêng sinh viên Đặc biệt Tài năng sẽ được xét cấp Học bổng toàn phần, bao gồm 100% chi phí và sinh hoạt phí liên quan.
+
+Bên cạnh đó, VinUni cũng công bố các gói hỗ trợ tài chính (need based) với mức 50%, 70% và 80% chi phí đào tạo cho các sinh viên chưa đủ điều kiện tài chính.
+
+Đặc biệt, Tập đoàn Vingroup cam kết, liên tục trong 5 niên khóa đầu tiên, tất cả sinh viên sẽ được VinUni hỗ trợ 35% chi phí, tương đương với khoảng US$12.000- US$14.000  trong suốt thời gian học tập tại trường.
+
+Bà Lê Mai Lan, Phó chủ tịch tập đoàn Vingroup
+
+Tại buổi tọa đàm về xây dựng đại học Tinh hoa, về mức học phí của  VinUni ngày 12/11, bà Lê Mai Lan, Phó chủ tịch tập đoàn Vingroup cho biết, với định hướng chỉ tuyển tài năng, VinUni chọn cơ chế xét tuyển dựa trên các đánh giá toàn diện của những trường Đại học tinh hoa thế giới, trong đó, kết quả học tập chỉ là một trong nhiều khía cạnh xem xét.
+
+Sau khi tuyển chọn được sinh viên tinh hoa, VinUni xác định đầu tư vào học thuật và nghiên cứu theo các tiêu chuẩn quốc tế cao nhất, để phát triển tiềm năng thành những nhân tài thực sự.
+
+Giải thích về mức học phí siêu đắt này ở Việt Nam, bà Lan cho rằng, đó là mức chi phí phù hợp với một trường đại học tinh hoa mà mục tiêu là đào tạo nhân tài, chứ không phải trường học của người giàu.
+
+TS. Rohit Verma, Hiệu trưởng VinUni
+
+TS. Rohit Verma, Hiệu trưởng VinUni cho biết, trong 2,5 năm đầu chúng tôi sẽ tập trung vào các phương pháp tích cực dựa trên cơ sở trải nghiệm đa ngành. Từ đó, hướng sinh viên có khả năng tư duy những vấn đề phức tạp, tạo ra những công nghệ tốt cho thế giới.
+
+Sinh viên không chỉ học ở Việt Nam mà còn có cơ hội đến trải nghiệm học tập ở các trường hàng đầu thế giới. Mặt khác, trường sẽ mời hệ thống chuyên gia, giảng viên quốc tế về làm việc ngay tại VinUni.
+
+Tại buổi tọa đàm, GS.TS Mai Trọng Nhuận – nguyên giám đốc ĐH Quốc gia Hà Nội cho rằng, xây dựng Đại học tinh hoa có 3 cái khó là đào tạo, môi trường và người học.
+
+Theo GS Nhuận, môi trường tinh hoa là môi trường thúc đẩy được khát vọng học tập, lao động, đặc biệt là sáng tạo. Nhúng mô hình mới vào môi trường Việt Nam cần phải có thêm một yếu tố "bảo lãnh". Như vậy, ĐH VinUni không chỉ tạo điều kiện thúc đẩy đổi mới sáng tạo mà còn phải bảo lãnh sáng tạo.
+
+GS Nhuận cho hay, khi có môi trường tinh hoa thì phải có người dạy tinh hoa. Ví dụ, đại học Philippines khi họ muốn đào tạo tài năng đổi mới đất nước, họ mời các giáo sư chủ yếu của Anh và Mỹ làm 3 việc: dạy môn học đó đúng như ở đất nước họ, bồi dưỡng cho đội ngũ cán bộ có trình độ tiến sĩ trở lên dạy được tương đương như họ, mở ngành học đó tại quê hương cùng mức lương hậu hĩnh.
+
+GS.TS Mai Trọng Nhuận
+
+Đặc biệt, cái khó nhất ở Việt Nam khi xây dựng ĐH tinh hoa, theo GS Nhuận là người học tinh hoa. Khi một người tài có nhiều tiêu chí đặt ra, họ có cơ hội đi nhiều nơi khắp thế giới vì nhiều trường đại học tinh hoa trên thế giới cũng mời chào, vẫy gọi. Vậy làm sao chúng ta "giữ chân" được người học tinh hoa ở trong nước?.
+
+GS Nhuận cho rằng, ở nước ngoài, các trường đại học càng uy tín, học phí càng cao nhưng ở Việt Nam, học phí càng cao càng khó chọn người tài, trừ khi trường cấp học bổng. Còn nếu bảo học sinh trả rất nhiều tiền để đi học thì những người tài chạy đi nơi khác. Khó khăn này còn lớn gấp nhiều lần so với việc có người dạy tinh hoa.
+
+“Nếu không có người học tinh hoa thì rất khó để tạo sản phẩm tinh hoa và rất khó để trở thành một đại học tinh hoa” – GS Nhuận nhấn mạnh.
+
+“Tất cả những sự tinh hoa trên mà VinUni đưa ra phải trả lời xã hội bằng sản phẩm tinh hoa, được cống hiến cho xã hội và được xã hội thừa nhận” – GS Nhuận nói.
+
+Tiến sĩ Nguyễn Sĩ Dũng
+
+Sẵn sàng chi tiền nếu có lòng tin
+
+Đồng quan điểm, Tiến sĩ Nguyễn Sĩ Dũng nguyên Phó chủ nhiệm Văn phòng Quốc hội góp ý, về lâu dài ĐH VinUni nên phấn đấu có chi phí của nhà nước, cái này không phải là chuyện cần thêm chi phí nhưng đó là tinh thần dân tộc để nhà nước hiểu và ghi nhận cùng hợp tác. Vì tại sao hợp tác với Đại học Cornell và Đại học Pennsylvania mà hợp tác với nhà nước lại không được.
+
+Về mức học phí mà VinUni đưa ra, TS Dũng cho rằng, tiền nào của nấy nhưng vấn đề là chất lượng. Người Việt tin rằng, trường sẽ giáo dục con mình thành tài năng, thì họ sẵn sàng chi tiền. Do đó, vấn đề bây giờ là trường tạo được lòng tin rằng, đào tạo ở đây sẽ trở thành tài năng.
+
+Đối với các học bổng mà VinUni công bố hỗ trợ người tài khi tuyển dụng, theo TS Dũng, thay vì việc cấp học bổng, VinUni nên thực hiện chương trình cho vay sẽ thiết thực hơn, bởi đó là nguồn động lực để tạo điều kiện theo học tại trường, khi sinh viên ra trường thành đạt rồi thì phải có trách nhiệm trả.
+
+### Xây dựng đại học tinh hoa ở Việt Nam có khó?
+
+### Vụ xin không nhận chức hiệu trưởng: Chủ tịch tỉnh ra quyết định mới
+
+### Vụ suất ăn có “tóp mỡ”: Hiệu trưởng lý giải màu thịt không đỏ như ngoài chợ
+
+### Hàng trăm học sinh xếp hàng tiễn biệt cô giáo ra đi vì bệnh nan y
+
+### Vụ suất ăn toàn "tóp mỡ": Phụ huynh loay hoay đi kiểm nghiệm mẫu thức ăn
+
+### Phó Thủ tướng lưu ý tình trạng nghiên cứu khoa học “xong rồi để đó”
+
+Thông tin doanh nghiệp - sản phẩm
