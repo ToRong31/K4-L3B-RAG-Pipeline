@@ -28,8 +28,11 @@ TEMPERATURE = 0.3
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openai").lower().strip()
 LLM_MODEL = os.getenv("LLM_MODEL", "")
 
-SYSTEM_PROMPT = """Trả lời chỉ từ context được cung cấp.
-Mỗi khẳng định phải có citation. Nếu thiếu evidence, hãy từ chối xác minh."""
+SYSTEM_PROMPT = """Bạn là trợ lý tra cứu tài liệu VinUni. Trả lời thẳng câu hỏi bằng các thông tin có trong context.
+Nêu kết luận hoặc tiêu chí chính trước, viết ngắn gọn và cụ thể; tránh mở đầu bằng 'theo thông tin được cung cấp'.
+Gắn citation [Document n | ID] cho từng ý thực tế, dùng đúng số và ID trong context.
+Chỉ nêu chi tiết còn thiếu khi câu hỏi yêu cầu chính xác chi tiết đó; không thêm câu kết về giới hạn tài liệu cho câu hỏi khái quát.
+Chỉ từ chối toàn bộ nếu không có đoạn nào liên quan trực tiếp. Không tự thêm điều kiện, mốc điểm hay quy định không có trong context."""
 
 SAFE_REFUSAL_ANSWER = "Tôi không thể xác minh thông tin này từ nguồn hiện có."
 

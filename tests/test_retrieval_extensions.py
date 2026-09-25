@@ -332,9 +332,35 @@ def test_retrieval_trace_records_formulated_queries_without_second_request(monke
     pipeline.retrieve("Quy định và thời hạn nộp học phí?", top_k=1, score_threshold=0.3)
 
     assert calls == ["Quy định và thời hạn nộp học phí?"]
-    assert pipeline.get_last_retrieval_trace() == {
-        "query_vi": "thời hạn nộp học phí",
-        "query_en": "tuition payment deadline",
-        "dense_queries": ["thời hạn nộp học phí", "tuition payment deadline"],
-        "bm25_query": "thời hạn nộp học phí",
-    }
+    trace = pipeline.get_last_retrieval_trace()
+    assert trace["query_vi"] == "thời hạn nộp học phí"
+    assert trace["query_en"] == "tuition payment deadline"
+    assert trace["dense_queries"] == ["thời hạn nộp học phí", "tuition payment deadline"]
+    assert trace["bm25_query"] == "thời hạn nộp học phí"
+    assert trace["best_dense_score"] == 0.9
+    assert trace["score_type"] == "rrf_rank"
+
+
+def test_cohere_timeout_reports_rrf_fallback(monkeypatch):
+    import requests
+    import src.task9_retrieval_pipeline as pipeline
+
+    monkeypatch.setenv("COHERE_RERANK_ENABLED", "true")
+    monkeypatch.setenv("COHERE_API_KEY", "test-key")
+    monkeypatch.setattr(pipeline, "formulate_query", lambda q: (q, ""))
+    monkeypatch.setattr(pipeline, "semantic_search", lambda q, top_k: [_result("dense", 0.8)])
+    monkeypatch.setattr(pipeline, "lexical_search", lambda q, top_k: [_result("bm25", 2, "bm25")])
+    fake_requests = types.SimpleNamespace(
+        post=lambda *args, **kwargs: (_ for _ in ()).throw(requests.Timeout()),
+        Timeout=requests.Timeout,
+        HTTPError=requests.HTTPError,
+    )
+    monkeypatch.setitem(sys.modules, "requests", fake_requests)
+
+    output = pipeline.retrieve("học phí", top_k=2, score_threshold=0.3)
+    trace = pipeline.get_last_retrieval_trace()
+
+    assert output[0]["score"] < 0.02
+    assert trace["cohere_status"] == "timeout_fallback"
+    assert trace["score_type"] == "rrf_rank"
+    assert trace["best_dense_score"] == 0.8

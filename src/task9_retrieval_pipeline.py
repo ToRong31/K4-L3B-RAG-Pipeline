@@ -16,7 +16,7 @@ from contextvars import ContextVar
 
 from dotenv import load_dotenv
 
-from .cohere_reranking import cohere_rerank
+from .cohere_reranking import cohere_rerank, get_last_rerank_status
 from .query_formulation import formulate_query
 from .task5_e5_search import e5_search
 from .task5_semantic_search import semantic_search
@@ -35,6 +35,10 @@ _last_retrieval_trace: ContextVar[dict] = ContextVar("last_retrieval_trace", def
 def get_last_retrieval_trace() -> dict:
     """Return query details from the latest retrieve call in this execution context."""
     return dict(_last_retrieval_trace.get())
+
+
+def _update_retrieval_trace(**changes) -> None:
+    _last_retrieval_trace.set({**_last_retrieval_trace.get(), **changes})
 
 
 def _search_bilingual(search, query_vi: str, query_en: str, top_k: int) -> list[dict]:
@@ -58,6 +62,7 @@ def retrieve(
     """Trả về hybrid hoặc pageindex SearchResult."""
     _last_retrieval_trace.set({
         "query_vi": "", "query_en": "", "dense_queries": [], "bm25_query": "",
+        "best_dense_score": None, "score_type": None, "cohere_status": "not_run",
     })
     if not query.strip() or top_k <= 0:
         return []
@@ -65,12 +70,12 @@ def retrieve(
     dense_queries = [query_vi]
     if query_en and query_en.casefold() != query_vi.casefold():
         dense_queries.append(query_en)
-    _last_retrieval_trace.set({
-        "query_vi": query_vi,
-        "query_en": query_en,
-        "dense_queries": dense_queries,
-        "bm25_query": query_vi,
-    })
+    _update_retrieval_trace(
+        query_vi=query_vi,
+        query_en=query_en,
+        dense_queries=dense_queries,
+        bm25_query=query_vi,
+    )
     dense_backend = os.getenv("DENSE_BACKEND", "shared").lower()
     if dense_backend == "e5":
         primary_search, secondary_search = e5_search, semantic_search
@@ -116,15 +121,27 @@ def retrieve(
     openai_dense = dense if dense_backend == "shared" else secondary_dense
     fallback_dense = openai_dense or dense or secondary_dense
     best_dense_score = max((item["score"] for item in fallback_dense), default=0.0)
+    _update_retrieval_trace(best_dense_score=best_dense_score)
     if best_dense_score < score_threshold:
         try:
             fallback = pageindex_search(query, top_k=top_k)
             if fallback:
+                _update_retrieval_trace(score_type="pageindex", cohere_status="skipped_pageindex")
                 return fallback[:top_k]
         except Exception:
             pass
     if use_cohere:
-        return cohere_rerank(query_vi, hybrid, top_k)
+        reranked = cohere_rerank(query_vi, hybrid, top_k)
+        cohere_status = get_last_rerank_status()
+        _update_retrieval_trace(
+            cohere_status=cohere_status,
+            score_type="cohere_relevance" if cohere_status == "applied" else "rrf_rank",
+        )
+        return reranked
+    _update_retrieval_trace(
+        cohere_status="disabled",
+        score_type="dense_cosine" if not use_reranking else "rrf_rank",
+    )
     return hybrid[:top_k]
 
 

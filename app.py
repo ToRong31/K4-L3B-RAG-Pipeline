@@ -269,7 +269,7 @@ with tab_chat:
                         st.markdown(f"""
                         <div class="source-box">
                             <div class="source-title">#{idx}. {title}</div>
-                            <div class="source-meta">File: <b>{source}</b> | Độ tương đồng: <b>{score:.4f}</b> | Kênh: <b>{method.upper()}</b> {f'| <a href="{url}" target="_blank">Mở link nguồn</a>' if url else ''}</div>
+                            <div class="source-meta">File: <b>{source}</b> | Score đầu ra: <b>{score:.4f}</b> | Kênh: <b>{method.upper()}</b> {f'| <a href="{url}" target="_blank">Mở link nguồn</a>' if url else ''}</div>
                             <div class="source-snippet">{src.get("content", "").strip()}</div>
                         </div>
                         """, unsafe_allow_html=True)
@@ -343,7 +343,7 @@ with tab_chat:
                             st.markdown(f"""
                             <div class="source-box">
                                 <div class="source-title">#{idx}. {title}</div>
-                                <div class="source-meta">File: <b>{source}</b> | Độ tương đồng: <b>{score:.4f}</b> | Kênh: <b>{method.upper()}</b> {f'| <a href="{url}" target="_blank">Mở link nguồn</a>' if url else ''}</div>
+                            <div class="source-meta">File: <b>{source}</b> | Score đầu ra: <b>{score:.4f}</b> | Kênh: <b>{method.upper()}</b> {f'| <a href="{url}" target="_blank">Mở link nguồn</a>' if url else ''}</div>
                                 <div class="source-snippet">{src.get("content", "").strip()}</div>
                             </div>
                             """, unsafe_allow_html=True)
@@ -400,7 +400,7 @@ with tab_telemetry:
             st.markdown(f"""
             <div class="metric-card">
                 <div class="metric-val">{max_score:.4f}</div>
-                <div class="metric-lbl">🏆 Best Output Score</div>
+                <div class="metric-lbl">🏆 Best Output Score ({trace.get('score_type') or 'unknown'})</div>
             </div>
             """, unsafe_allow_html=True)
         with m5:
@@ -414,6 +414,9 @@ with tab_telemetry:
             """, unsafe_allow_html=True)
 
         st.markdown("---")
+
+        cohere_status = trace.get("cohere_status", "unknown")
+        st.caption(f"Cohere: {cohere_status} · Loại điểm hiển thị: {trace.get('score_type') or 'unknown'}. Khi Cohere timeout, hệ thống dùng điểm RRF khoảng 0.01; không so trực tiếp với cosine hoặc relevance score.")
 
         st.markdown("#### 🔎 Query formulation dùng cho retrieval")
         st.write(f"**Tiếng Việt / BM25:** {trace.get('query_vi') or 'Không có'}")
@@ -465,12 +468,14 @@ with tab_telemetry:
             # Stage 4: Fallback Guardrail
             fallback_used = trace['retrieval_source'] == 'pageindex'
             threshold_used = trace.get('score_threshold', score_threshold)
+            best_dense_score = trace.get('best_dense_score')
+            best_dense_label = f"{best_dense_score:.4f}" if best_dense_score is not None else "N/A"
             st.markdown(f"""
             <div class="pipeline-step">
                 <div class="step-header">🔹 Stage 4: Kiểm soát ngưỡng Fallback (Task 8 & 9)</div>
                 <p style="font-size: 13px; color: #475569; margin: 0;">
                     • <b>Ngưỡng đã dùng (Threshold):</b> <code>{threshold_used}</code><br>
-                    • <b>Kiểm tra:</b> Task 9 so ngưỡng với cosine dense gốc.<br>
+                    • <b>Best Dense Cosine gốc:</b> <code>{best_dense_label}</code><br>
                     • <b>Kết quả:</b> <span style="color: {'#f59e0b' if fallback_used else '#10b981'}; font-weight: 600;">
                         {'Đã dùng PageIndex fallback' if fallback_used else 'Không dùng kết quả PageIndex'}
                     </span>
